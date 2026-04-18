@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>შესვლა</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body class="auth-page">
+<div class="auth-layout">
+    <section class="auth-panel intro-panel">
+        <a class="brand minimal" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>მომხმარებლის ავტორიზაცია</span>
+            </div>
+        </a>
+        <h1>ავტორიზაცია</h1>
+        <p>შედი სისტემაში, რომ დაამატო განცხადებები, ატვირთო სურათები და მართო საკუთარი პროფილი.</p>
+    </section>
+
+    <section class="auth-panel form-panel">
+        <h2>შესვლა</h2>
+        <div class="alert success" th:if="${param.registered}">
+            რეგისტრაცია დასრულდა. ახლა შეგიძლია შეხვიდე სისტემაში.
+        </div>
+        <div class="alert error" th:if="${param.error}">
+            ელ-ფოსტა ან პაროლი არასწორია.
+        </div>
+        <div class="alert success" th:if="${param.logout}">
+            სისტემიდან გახვედი.
+        </div>
+
+        <form class="stack-form" th:action="@{/login}" method="post">
+            <div class="field-group">
+                <label for="username">ელ-ფოსტა</label>
+                <input id="username" name="username" type="email" placeholder="test@uniparts.ge" required>
+            </div>
+            <div class="field-group">
+                <label for="password">პაროლი</label>
+                <input id="password" name="password" type="password" placeholder="შეიყვანე პაროლი" required>
+            </div>
+            <button class="primary-button full-width" type="submit">შესვლა</button>
+        </form>
+
+        <p class="form-hint">
+            ანგარიში არ გაქვს?
+            <a th:href="@{/register}">რეგისტრაცია</a>
+        </p>
+
+        <div class="demo-box">
+            <strong>Demo user</strong>
+            <span>test@uniparts.ge / password123</span>
+        </div>
+    </section>
+</div>
+</body>
+</html>

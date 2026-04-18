@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">ახალი განცხადება</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<header class="site-header compact">
+    <div class="container nav-shell">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span th:text="${headerSubtitle}">ახალი განცხადება</span>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/}">მთავარი</a>
+            <a th:href="@{/ads}">განცხადებები</a>
+            <a th:href="@{/my-ads}">ჩემი განცხადებები</a>
+            <form th:action="@{/logout}" method="post">
+                <button class="link-button" type="submit">გასვლა</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="container narrow">
+        <div class="section-heading">
+            <span class="section-kicker" th:text="${formKicker}">ახალი განცხადება</span>
+            <h1 th:text="${formTitle}">განცხადების დამატება</h1>
+            <p th:text="${formDescription}">აირჩიე ავტომობილის ბრენდი, მოდელი და წელი, შემდეგ დაამატე ფოტოები და ფასი.</p>
+        </div>
+
+        <form class="stack-form listing-form" data-brand-model-pair th:action="${formAction}" th:object="${listingForm}" method="post" enctype="multipart/form-data">
+            <div class="alert error" th:if="${param.uploadError}">
+                ფოტოების ატვირთვა ვერ მოხერხდა. ერთი ფაილი უნდა იყოს მაქსიმუმ 10MB, ხოლო ყველა ფოტო ერთად მაქსიმუმ 30MB.
+            </div>
+            <div class="alert error" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
+
+            <div class="field-group">
+                <label for="title">სათაური</label>
+                <input id="title" th:field="*{title}" type="text" placeholder="მაგ. Toyota Camry წინა ფარი">
+                <small class="field-error" th:errors="*{title}"></small>
+            </div>
+
+            <div class="split-fields">
+                <div class="field-group">
+                    <label for="brand">ბრენდი</label>
+                    <select id="brand" data-brand-select th:field="*{brand}">
+                        <option value="">აირჩიე ბრენდი</option>
+                        <option th:each="brandOption : ${brandOptions}" th:value="${brandOption}" th:text="${brandOption}"></option>
+                    </select>
+                    <small class="field-error" th:errors="*{brand}"></small>
+                </div>
+
+                <div class="field-group">
+                    <label for="model">მოდელი</label>
+                    <select id="model" data-model-select data-default-label="აირჩიე მოდელი" th:field="*{model}">
+                        <option value="">აირჩიე მოდელი</option>
+                        <option th:each="modelOption : ${modelOptions}" th:value="${modelOption}" th:text="${modelOption}"></option>
+                    </select>
+                    <small class="field-error" th:errors="*{model}"></small>
+                </div>
+            </div>
+
+            <div class="split-fields">
+                <div class="field-group">
+                    <label for="vehicleYear">წელი</label>
+                    <select id="vehicleYear" th:field="*{vehicleYear}">
+                        <option value="">აირჩიე წელი</option>
+                        <option th:each="yearOption : ${yearOptions}" th:value="${yearOption}" th:text="${yearOption}"></option>
+                    </select>
+                    <small class="field-error" th:errors="*{vehicleYear}"></small>
+                </div>
+
+                <div class="field-group">
+                    <label for="partCategory">კატეგორია</label>
+                    <input id="partCategory" th:field="*{partCategory}" type="text" placeholder="განათება, ძრავი, კუზაო...">
+                    <small class="field-error" th:errors="*{partCategory}"></small>
+                </div>
+            </div>
+
+            <div class="split-fields">
+                <div class="field-group">
+                    <label for="price">ფასი (₾)</label>
+                    <input id="price" th:field="*{price}" type="number" min="1" step="0.01" placeholder="100">
+                    <small class="field-error" th:errors="*{price}"></small>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="condition">მდგომარეობა</label>
+                <select id="condition" th:field="*{condition}">
+                    <option value="">აირჩიე მდგომარეობა</option>
+                    <option th:each="condition : ${conditions}" th:value="${condition}" th:text="${condition.label}"></option>
+                </select>
+                <small class="field-error" th:errors="*{condition}"></small>
+            </div>
+
+            <div class="field-group">
+                <label for="description">აღწერა</label>
+                <textarea id="description" th:field="*{description}" rows="6" placeholder="მაგ. კარგი მდგომარეობა, მცირე ნაკაწრი"></textarea>
+                <small class="field-error" th:errors="*{description}"></small>
+            </div>
+
+            <div class="field-group">
+                <label for="images">სურათები</label>
+                <div class="existing-images-grid" th:if="${!#lists.isEmpty(existingImageUrls)}">
+                    <img th:each="imageUrl : ${existingImageUrls}" th:src="${imageUrl}" alt="Current listing image">
+                </div>
+                <div class="multi-upload-shell" data-image-upload>
+                    <input id="images" name="images" type="file" accept="image/*" multiple data-image-input>
+                    <div class="multi-upload-toolbar">
+                        <button class="secondary-button" type="button" data-image-picker>ფოტოების დამატება</button>
+                        <span class="multi-upload-count" data-image-count>ფოტოები ჯერ არ არის არჩეული</span>
+                    </div>
+                    <div class="selected-images-grid" data-image-preview hidden></div>
+                </div>
+                <small class="field-help"
+                       th:text="${isEditMode ? 'შეგიძლია ფოტოები დაამატო ერთიანად ან სათითაოდ. თუ ახალ ფოტოებს ატვირთავ, არსებული ფოტოები შეიცვლება. თითო ფაილი მაქსიმუმ 10MB, ჯამში 30MB.' : 'შეგიძლია ფოტოები დაამატო ერთიანად ან სათითაოდ. თითო ფაილი მაქსიმუმ 10MB, ჯამში 30MB.'}">
+                    შეგიძლია ფოტოები დაამატო ერთიანად ან სათითაოდ. თითო ფაილი მაქსიმუმ 10MB, ჯამში 30MB.
+                </small>
+            </div>
+
+            <div class="form-actions">
+                <button class="primary-button" type="submit" th:text="${submitLabel}">გამოქვეყნება</button>
+                <a class="secondary-button" th:if="${isEditMode}" th:href="${formViewUrl}">ნახვა</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="site-footer compact-footer">
+    <div class="container footer-shell">
+        <section class="footer-main">
+            <div>
+                <h3>UniParts Support</h3>
+                <p>ტელეფონი: <span th:text="${contactPhone}">+995 555 12 34 56</span></p>
+                <p>ელ-ფოსტა: <span th:text="${contactEmail}">support@uniparts.ge</span></p>
+            </div>
+            <div>
+                <h3>სამუშაო დრო</h3>
+                <p th:text="${workingHours}">Every day, 10:00 - 19:00</p>
+            </div>
+            <div class="footer-links compact-links">
+                <a th:href="@{/privacy}">კონფიდენციალურობა</a>
+                <a th:href="@{/terms}">წესები</a>
+            </div>
+        </section>
+    </div>
+</footer>
+<script th:inline="javascript">
+    window.partsBrandModelMap = /*[[${brandModelMap}]]*/ {};
+</script>
+<script th:src="@{/js/brand-model-select.js}"></script>
+<script th:src="@{/js/multi-image-upload.js}"></script>
+</body>
+</html>

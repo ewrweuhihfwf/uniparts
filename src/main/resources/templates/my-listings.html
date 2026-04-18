@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ჩემი განცხადებები</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<header class="site-header compact">
+    <div class="container nav-shell">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>ჩემი განცხადებები</span>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/}">მთავარი</a>
+            <a th:href="@{/sell}">ახალი განცხადება</a>
+            <a th:href="@{/ads}">ყველა განცხადება</a>
+            <form th:action="@{/logout}" method="post">
+                <button class="link-button" type="submit">გასვლა</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="container">
+        <div class="alert success" th:if="${param.deleted}">
+            განცხადება წაიშალა.
+        </div>
+        <div class="alert error" th:if="${param.deleteError}">
+            განცხადების წაშლა ვერ მოხერხდა.
+        </div>
+
+        <div class="section-heading">
+            <h1>ჩემი განცხადებები</h1>
+            <p>აქ ჩანს ყველა განცხადება, რომელიც ამ მომხმარებელმა გამოაქვეყნა.</p>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(listings)}">
+            <h3>ჯერ განცხადება არ დაგიმატებია</h3>
+            <p>დაიწყე პირველით და ატვირთე ფოტო.</p>
+            <a class="primary-button" th:href="@{/sell}">დამატება</a>
+        </div>
+
+        <div class="card-grid" th:unless="${#lists.isEmpty(listings)}">
+            <article class="listing-card"
+                     th:each="listing : ${listings}"
+                     th:attr="data-click-url=@{'/ads/' + ${listing.id}}, aria-label=${listing.title}"
+                     tabindex="0"
+                     role="link">
+                <img class="listing-image"
+                     th:src="${listing.previewImageUrl}"
+                     alt="Listing image">
+                <div class="listing-body">
+                    <h3 th:text="${listing.title}">Listing title</h3>
+                    <p th:text="${listing.brand + ' / ' + listing.model + (listing.vehicleYear != null ? ' / ' + listing.vehicleYear : '')}">Brand / model / year</p>
+                    <div class="card-footer">
+                        <strong th:text="${#numbers.formatDecimal(listing.price, 1, 'COMMA', 2, 'POINT')} + ' ₾'">100.00 ₾</strong>
+                        <div class="card-actions">
+                            <a th:href="@{'/ads/' + ${listing.id}}" data-card-action>ნახვა</a>
+                            <a class="secondary-link" th:href="@{'/ads/' + ${listing.id} + '/edit'}" data-card-action>რედაქტირება</a>
+                            <form data-confirm-submit
+                                  th:action="@{'/ads/' + ${listing.id} + '/delete'}"
+                                  th:attr="data-listing-title=${listing.title}"
+                                  method="post">
+                                <button class="danger-button" type="submit">წაშლა</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer compact-footer">
+    <div class="container footer-shell">
+        <section class="footer-main">
+            <div>
+                <h3>UniParts Support</h3>
+                <p>ტელეფონი: <span th:text="${contactPhone}">+995 555 12 34 56</span></p>
+                <p>ელ-ფოსტა: <span th:text="${contactEmail}">support@uniparts.ge</span></p>
+            </div>
+            <div>
+                <h3>სამუშაო დრო</h3>
+                <p th:text="${workingHours}">Every day, 10:00 - 19:00</p>
+            </div>
+            <div class="footer-links compact-links">
+                <a th:href="@{/privacy}">კონფიდენციალურობა</a>
+                <a th:href="@{/terms}">წესები</a>
+            </div>
+        </section>
+    </div>
+</footer>
+<th:block th:replace="~{fragments/delete-confirm :: deleteConfirm}"></th:block>
+<script th:src="@{/js/delete-confirm.js}"></script>
+<script th:src="@{/js/listing-card-link.js}"></script>
+</body>
+</html>
