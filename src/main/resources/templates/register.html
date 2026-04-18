@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>რეგისტრაცია</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body class="auth-page">
+<div class="auth-layout">
+    <section class="auth-panel intro-panel">
+        <a class="brand minimal" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>ახალი ანგარიშის შექმნა</span>
+            </div>
+        </a>
+        <h1>რეგისტრაცია</h1>
+        <p>შექმენი მომხმარებელი და გამოიყენე პლატფორმა როგორც გამყიდველი ან მყიდველი.</p>
+    </section>
+
+    <section class="auth-panel form-panel">
+        <h2>ახალი ანგარიში</h2>
+
+        <form class="stack-form" th:action="@{/register}" th:object="${registrationForm}" method="post">
+            <div class="field-group">
+                <label for="fullName">სახელი და გვარი</label>
+                <input id="fullName" th:field="*{fullName}" type="text" placeholder="მაგ. test user">
+                <small class="field-error" th:errors="*{fullName}"></small>
+            </div>
+
+            <div class="field-group">
+                <label for="email">ელ-ფოსტა</label>
+                <input id="email" th:field="*{email}" type="email" placeholder="user@uniparts.ge">
+                <small class="field-error" th:errors="*{email}"></small>
+            </div>
+
+            <div class="field-group">
+                <label for="phone">ტელეფონი</label>
+                <input id="phone" th:field="*{phone}" type="text" placeholder="+995 5XX XX XX XX">
+                <small class="field-error" th:errors="*{phone}"></small>
+            </div>
+
+            <div class="field-group">
+                <label for="password">პაროლი</label>
+                <input id="password" th:field="*{password}" type="password" placeholder="მინიმუმ 6 სიმბოლო">
+                <small class="field-error" th:errors="*{password}"></small>
+            </div>
+
+            <div class="field-group">
+                <label for="confirmPassword">გაიმეორე პაროლი</label>
+                <input id="confirmPassword" th:field="*{confirmPassword}" type="password" placeholder="გაიმეორე პაროლი">
+                <small class="field-error" th:errors="*{confirmPassword}"></small>
+            </div>
+
+            <button class="primary-button full-width" type="submit">რეგისტრაცია</button>
+        </form>
+
+        <p class="form-hint">
+            უკვე გაქვს ანგარიში?
+            <a th:href="@{/login}">შესვლა</a>
+        </p>
+    </section>
+</div>
+</body>
+</html>

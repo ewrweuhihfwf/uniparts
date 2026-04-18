@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>კონფიდენციალურობის პოლიტიკა</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<header class="site-header compact">
+    <div class="container nav-shell">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>კონფიდენციალურობის პოლიტიკა</span>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/}">მთავარი</a>
+            <a th:href="@{/ads}">განცხადებები</a>
+            <th:block th:if="${isAuthenticated}">
+                <a th:href="@{/sell}">დამატება</a>
+                <a th:href="@{/my-ads}">ჩემი განცხადებები</a>
+                <form th:action="@{/logout}" method="post">
+                    <button class="link-button" type="submit">გასვლა</button>
+                </form>
+            </th:block>
+            <th:block th:unless="${isAuthenticated}">
+                <a class="nav-accent" th:href="@{/login}">შესვლა</a>
+                <a th:href="@{/register}">რეგისტრაცია</a>
+            </th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="container narrow">
+        <section class="listing-form">
+            <div class="section-heading">
+                <h1>კონფიდენციალურობის პოლიტიკა</h1>
+                <p>ეს გვერდი შექმნილია უნივერსიტეტის პროექტისთვის და აღწერს დემო აპლიკაციის მონაცემთა გამოყენებას.</p>
+            </div>
+            <div class="stack-form">
+                <div class="seller-box">
+                    <p>ჩვენ ვინახავთ მხოლოდ იმ მონაცემებს, რომელსაც მომხმარებელი თავად შეიყვანს რეგისტრაციისა და განცხადების დამატების დროს.</p>
+                    <p>მონაცემები გამოიყენება ავტორიზაციისთვის, განცხადებების გამოსაჩენად და პროექტის დემოსთვის.</p>
+                    <p>ფოტოები ინახება ლოკალურად `uploads/` საქაღალდეში, ხოლო მომხმარებლისა და განცხადებების ინფორმაცია H2 მონაცემთა ბაზაში.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>
