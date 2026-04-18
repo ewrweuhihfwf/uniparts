@@ -1,0 +1,19 @@
+spring:
+  config:
+    activate:
+      on-profile: production
+  datasource:
+    url: jdbc:h2:file:./data/uniparts-production
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  thymeleaf:
+    cache: true
+
+logging:
+  level:
+    com.example.parts: INFO

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: parts-marketplace
+  profiles:
+    default: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+      resolve-lazily: true
+
+server:
+  port: 8080
+
+parts:
+  marketplace-name: UniParts
+  contact-phone: "+995 555 12 34 56"
+  contact-email: "support@uniparts.ge"
+  office-address: "Tbilisi, Nutsubidze Street 129a, 3rd floor"
+  working-hours: "Every day, 10:00 - 19:00"
+  upload-dir: uploads
+  home-items-limit: 6
+
+logging:
+  level:
+    root: INFO
+    com.example.parts: INFO
+  file:
+    name: logs/parts-marketplace.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
