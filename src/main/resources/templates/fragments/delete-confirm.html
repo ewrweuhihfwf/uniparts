@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<body>
+<dialog class="confirm-dialog" data-delete-confirm-dialog th:fragment="deleteConfirm">
+    <div class="confirm-dialog-panel">
+        <span class="confirm-dialog-kicker">განცხადების წაშლა</span>
+        <h2>ნამდვილად გსურს წაშლა?</h2>
+        <p>ეს მოქმედება შეუქცევადია და განცხადება ფოტოებთან ერთად წაიშლება.</p>
+        <div class="confirm-dialog-title" data-delete-confirm-title>Listing title</div>
+        <div class="confirm-dialog-actions">
+            <button class="secondary-button" type="button" data-delete-confirm-cancel>გაუქმება</button>
+            <button class="danger-button" type="button" data-delete-confirm-accept>წაშლა</button>
+        </div>
+    </div>
+</dialog>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>კონტაქტები</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<header class="site-header compact">
+    <div class="container nav-shell">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>კონტაქტები</span>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/}">მთავარი</a>
+            <a th:href="@{/ads}">განცხადებები</a>
+            <th:block th:if="${isAuthenticated}">
+                <a th:href="@{/sell}">დამატება</a>
+                <a th:href="@{/my-ads}">ჩემი განცხადებები</a>
+                <form th:action="@{/logout}" method="post">
+                    <button class="link-button" type="submit">გასვლა</button>
+                </form>
+            </th:block>
+            <th:block th:unless="${isAuthenticated}">
+                <a class="nav-accent" th:href="@{/login}">შესვლა</a>
+                <a th:href="@{/register}">რეგისტრაცია</a>
+            </th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="container narrow">
+        <section class="listing-form">
+            <div class="section-heading">
+                <h1>კონტაქტები</h1>
+                <p>დაგვიკავშირდი კითხვების, შეცდომების ან უნივერსიტეტის დემოსთვის.</p>
+            </div>
+            <div class="stack-form">
+                <div class="seller-box">
+                    <p><strong>ტელეფონი:</strong> <span th:text="${contactPhone}">+995 555 12 34 56</span></p>
+                    <p><strong>ელ-ფოსტა:</strong> <span th:text="${contactEmail}">support@uniparts.ge</span></p>
+                    <p><strong>მისამართი:</strong> <span th:text="${officeAddress}">Tbilisi, Nutsubidze Street 129a, 3rd floor</span></p>
+                    <p><strong>სამუშაო დრო:</strong> <span th:text="${workingHours}">Every day, 10:00 - 19:00</span></p>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>
