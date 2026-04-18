@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${marketplaceName} + ' - ავტონაწილების პლატფორმა'">UniParts</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<header class="site-header compact">
+    <div class="container nav-shell">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>ავტონაწილების განცხადებების პლატფორმა</span>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/ads}">განცხადებები</a>
+            <th:block th:if="${isAuthenticated}">
+                <a th:href="@{/sell}">დამატება</a>
+                <a th:href="@{/my-ads}">ჩემი განცხადებები</a>
+                <form th:action="@{/logout}" method="post">
+                    <button class="link-button" type="submit">გასვლა</button>
+                </form>
+            </th:block>
+            <th:block th:unless="${isAuthenticated}">
+                <a class="nav-accent" th:href="@{/login}">შესვლა</a>
+                <a th:href="@{/register}">რეგისტრაცია</a>
+            </th:block>
+        </nav>
+    </div>
+</header>
+<main class="catalog-main">
+    <section class="search-section">
+        <div class="container">
+            <div class="alert error" th:if="${param.notFound}">
+                განცხადება ვერ მოიძებნა.
+            </div>
+            <div class="catalog-panel">
+                <form class="search-form filter-form" data-brand-model-pair th:action="${searchAction}" th:object="${filter}" method="get">
+                    <div class="filters-grid">
+                        <div class="field-group">
+                            <label for="brand">მწარმოებელი</label>
+                            <select id="brand" data-brand-select th:field="*{brand}">
+                                <option value="">ყველა მწარმოებელი</option>
+                                <option th:each="brandOption : ${brandOptions}" th:value="${brandOption}" th:text="${brandOption}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="model">მოდელი</label>
+                            <select id="model" data-model-select data-default-label="ყველა მოდელი" th:field="*{model}">
+                                <option value="">ყველა მოდელი</option>
+                                <option th:each="modelOption : ${modelOptions}" th:value="${modelOption}" th:text="${modelOption}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="minYear">წელი დან</label>
+                            <select id="minYear" th:field="*{minYear}">
+                                <option value="">წელი დან</option>
+                                <option th:each="yearOption : ${yearOptions}" th:value="${yearOption}" th:text="${yearOption}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="maxYear">წელი მდე</label>
+                            <select id="maxYear" th:field="*{maxYear}">
+                                <option value="">წელი მდე</option>
+                                <option th:each="yearOption : ${yearOptions}" th:value="${yearOption}" th:text="${yearOption}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="partCategory">კატეგორია</label>
+                            <select id="partCategory" th:field="*{partCategory}">
+                                <option value="">ყველა კატეგორია</option>
+                                <option th:each="categoryOption : ${categoryOptions}" th:value="${categoryOption}" th:text="${categoryOption}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="condition">მდგომარეობა</label>
+                            <select id="condition" th:field="*{condition}">
+                                <option value="">ყველა მდგომარეობა</option>
+                                <option th:each="conditionOption : ${conditionOptions}" th:value="${conditionOption}" th:text="${conditionOption.label}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="minPrice">ფასი დან</label>
+                            <select id="minPrice" th:field="*{minPrice}">
+                                <option value="">ფასი დან</option>
+                                <option th:each="priceOption : ${priceOptions}" th:value="${priceOption}" th:text="${priceOption + ' ₾'}"></option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="maxPrice">ფასი მდე</label>
+                            <select id="maxPrice" th:field="*{maxPrice}">
+                                <option value="">ფასი მდე</option>
+                                <option th:each="priceOption : ${priceOptions}" th:value="${priceOption}" th:text="${priceOption + ' ₾'}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="primary-button" type="submit">ფილტრის გამოყენება</button>
+                        <a class="secondary-button" th:href="${searchAction}">გასუფთავება</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="listings-section">
+        <div class="container">
+            <div class="section-heading">
+                <div>
+                    <span class="section-kicker">განცხადებების კატალოგი</span>
+                    <h2 th:text="${sectionTitle}">ახალი განცხადებები</h2>
+                    <p th:text="${sectionDescription}">
+                        პოპულარული და ახლახან დამატებული ნაწილები.
+                    </p>
+                </div>
+                <span class="section-count" th:text="${#lists.size(listings)} + ' შედეგი'">6 შედეგი</span>
+            </div>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(listings)}">
+                <h3>განცხადებები ვერ მოიძებნა</h3>
+                <p>სცადე სხვა სიტყვით ძიება ან დაამატე საკუთარი განცხადება.</p>
+            </div>
+
+            <div class="card-grid" th:unless="${#lists.isEmpty(listings)}">
+                <article class="listing-card"
+                         th:each="listing : ${listings}"
+                         th:attr="data-click-url=@{'/ads/' + ${listing.id}}, aria-label=${listing.title}"
+                         tabindex="0"
+                         role="link">
+                    <img class="listing-image"
+                         th:src="${listing.previewImageUrl}"
+                         alt="Listing image">
+                    <div class="listing-body">
+                        <div class="card-topline">
+                            <span class="chip" th:text="${listing.partCategory}">კატეგორია</span>
+                            <span class="chip muted" th:text="${listing.condition.label}">მდგომარეობა</span>
+                            <span class="chip muted" th:if="${listing.vehicleYear != null}" th:text="${listing.vehicleYear}">2018</span>
+                        </div>
+                        <h3 th:text="${listing.title}">Toyota Camry წინა ფარი</h3>
+                        <p th:text="${listing.brand + ' / ' + listing.model + (listing.vehicleYear != null ? ' / ' + listing.vehicleYear : '')}">Toyota / Camry / 2018</p>
+                        <p class="listing-desc" th:text="${listing.description}">აღწერა</p>
+                        <div class="card-footer">
+                            <strong th:text="${#numbers.formatDecimal(listing.price, 1, 'COMMA', 2, 'POINT')} + ' ₾'">320.00 ₾</strong>
+                            <a th:href="@{'/ads/' + ${listing.id}}" data-card-action>ვრცლად</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-shell">
+        <section class="footer-main">
+            <div>
+                <h3>UniParts Support</h3>
+                <p>ტელეფონი: <span th:text="${contactPhone}">+995 555 12 34 56</span></p>
+                <p>ელ-ფოსტა: <span th:text="${contactEmail}">support@uniparts.ge</span></p>
+            </div>
+            <div>
+                <h3>სამუშაო დრო</h3>
+                <p th:text="${workingHours}">Every day, 10:00 - 19:00</p>
+            </div>
+            <div class="footer-links compact-links">
+                <a th:href="@{/privacy}">კონფიდენციალურობის პოლიტიკა</a>
+                <a th:href="@{/terms}">წესები და პირობები</a>
+            </div>
+        </section>
+    </div>
+</footer>
+<script th:inline="javascript">
+    window.partsBrandModelMap = /*[[${brandModelMap}]]*/ {};
+</script>
+<script th:src="@{/js/brand-model-select.js}"></script>
+<script th:src="@{/js/listing-card-link.js}"></script>
+</body>
+</html>

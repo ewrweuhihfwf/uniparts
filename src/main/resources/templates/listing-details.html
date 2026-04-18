@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ka" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${listing.title}">განცხადება</title>
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<header class="site-header compact">
+    <div class="container nav-shell">
+        <a class="brand" th:href="@{/}">
+            <img th:src="@{/images/logo.svg}" alt="UniParts logo">
+            <div>
+                <strong th:text="${marketplaceName}">UniParts</strong>
+                <span>განცხადების დეტალები</span>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/}">მთავარი</a>
+            <a th:href="@{/ads}">ყველა განცხადება</a>
+            <th:block th:if="${isAuthenticated}">
+                <a th:href="@{/sell}">დამატება</a>
+                <a th:href="@{/my-ads}">ჩემი განცხადებები</a>
+                <form th:action="@{/logout}" method="post">
+                    <button class="link-button" type="submit">გასვლა</button>
+                </form>
+            </th:block>
+            <th:block th:unless="${isAuthenticated}">
+                <a class="nav-accent" th:href="@{/login}">შესვლა</a>
+                <a th:href="@{/register}">რეგისტრაცია</a>
+            </th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="container">
+        <div class="alert success" th:if="${param.created}">
+            განცხადება წარმატებით გამოქვეყნდა.
+        </div>
+        <div class="alert success" th:if="${param.updated}">
+            განცხადება განახლდა.
+        </div>
+        <div class="alert error" th:if="${param.deleteError}">
+            მხოლოდ განცხადების ავტორს შეუძლია წაშლა.
+        </div>
+        <div class="alert error" th:if="${param.editError}">
+            მხოლოდ განცხადების ავტორს შეუძლია რედაქტირება.
+        </div>
+
+        <section class="details-grid">
+            <div class="details-media" th:with="galleryImages=${listing.allImageFilenames}">
+                <div class="details-viewer" data-gallery>
+                    <button class="gallery-nav-button gallery-nav-button-left"
+                            type="button"
+                            aria-label="წინა ფოტო"
+                            data-gallery-prev
+                            th:if="${#lists.size(galleryImages) > 1}">
+                        ‹
+                    </button>
+                    <img class="details-main-image"
+                         th:src="${listing.previewImageUrl}"
+                         th:alt="${listing.title}"
+                         data-gallery-main>
+                    <button class="gallery-nav-button gallery-nav-button-right"
+                            type="button"
+                            aria-label="შემდეგი ფოტო"
+                            data-gallery-next
+                            th:if="${#lists.size(galleryImages) > 1}">
+                        ›
+                    </button>
+                    <div class="details-gallery-counter"
+                         data-gallery-counter
+                         th:if="${#lists.size(galleryImages) > 1}"
+                         th:text="'1 / ' + ${#lists.size(galleryImages)}">
+                        1 / 3
+                    </div>
+                </div>
+
+                <div class="details-gallery-shell" th:if="${!#lists.isEmpty(galleryImages)}">
+                    <button class="gallery-strip-button"
+                            type="button"
+                            aria-label="გადაახვიე მარცხნივ"
+                            data-gallery-strip-prev
+                            th:if="${#lists.size(galleryImages) > 4}">
+                        ‹
+                    </button>
+                    <div class="details-gallery" data-gallery-strip>
+                        <button class="details-thumb"
+                                type="button"
+                                data-gallery-thumb
+                                th:each="filename, imageStat : ${galleryImages}"
+                                th:classappend="${imageStat.index == 0} ? ' is-active' : ''"
+                                th:attr="data-full-image=${'/uploads/' + filename}, data-index=${imageStat.index}, aria-label=${'ფოტო ' + (imageStat.index + 1)}">
+                            <img th:src="${'/uploads/' + filename}" th:alt="${listing.title + ' ფოტო ' + (imageStat.index + 1)}">
+                        </button>
+                    </div>
+                    <button class="gallery-strip-button"
+                            type="button"
+                            aria-label="გადაახვიე მარჯვნივ"
+                            data-gallery-strip-next
+                            th:if="${#lists.size(galleryImages) > 4}">
+                        ›
+                    </button>
+                </div>
+            </div>
+
+            <div class="details-content">
+                <div class="card-topline">
+                    <span class="chip" th:text="${listing.partCategory}">კატეგორია</span>
+                    <span class="chip muted" th:text="${listing.condition.label}">მდგომარეობა</span>
+                    <span class="chip muted" th:if="${listing.vehicleYear != null}" th:text="${listing.vehicleYear}">2018</span>
+                </div>
+                <h1 th:text="${listing.title}">Toyota Camry წინა ფარი</h1>
+                <p class="details-meta" th:text="${listing.brand + ' / ' + listing.model + (listing.vehicleYear != null ? ' / ' + listing.vehicleYear : '')}">Toyota / Camry / 2018</p>
+                <div class="price-block" th:text="${#numbers.formatDecimal(listing.price, 1, 'COMMA', 2, 'POINT')} + ' ₾'">320.00 ₾</div>
+                <p class="details-text" th:text="${listing.description}">აღწერა</p>
+
+                <div class="seller-box">
+                    <h3>გამყიდველი</h3>
+                    <p th:text="${listing.seller.fullName}">test</p>
+                    <p th:text="${listing.seller.phone}">+995 599 11 22 33</p>
+                    <p th:text="${listing.seller.email}">test@uniparts.ge</p>
+                </div>
+
+                <div class="details-actions" th:if="${canDeleteListing}">
+                    <a class="primary-button" th:if="${canEditListing}" th:href="@{'/ads/' + ${listing.id} + '/edit'}">რედაქტირება</a>
+                    <a class="secondary-button" th:href="@{/my-ads}">ჩემი განცხადებები</a>
+                    <form data-confirm-submit
+                          th:action="@{'/ads/' + ${listing.id} + '/delete'}"
+                          th:attr="data-listing-title=${listing.title}"
+                          method="post">
+                        <button class="danger-button" type="submit">წაშლა</button>
+                    </form>
+                </div>
+
+                <p class="timestamp" th:text="'დამატებულია: ' + ${#temporals.format(listing.createdAt, 'dd.MM.yyyy HH:mm')}">
+                    დამატებულია
+                </p>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer class="site-footer compact-footer">
+    <div class="container footer-shell">
+        <section class="footer-main">
+            <div>
+                <h3>UniParts Support</h3>
+                <p>ტელეფონი: <span th:text="${contactPhone}">+995 555 12 34 56</span></p>
+                <p>ელ-ფოსტა: <span th:text="${contactEmail}">support@uniparts.ge</span></p>
+            </div>
+            <div>
+                <h3>სამუშაო დრო</h3>
+                <p th:text="${workingHours}">Every day, 10:00 - 19:00</p>
+            </div>
+            <div class="footer-links compact-links">
+                <a th:href="@{/privacy}">კონფიდენციალურობა</a>
+                <a th:href="@{/terms}">წესები</a>
+            </div>
+        </section>
+    </div>
+</footer>
+<th:block th:replace="~{fragments/delete-confirm :: deleteConfirm}"></th:block>
+<script th:src="@{/js/delete-confirm.js}"></script>
+<script th:src="@{/js/listing-gallery.js}"></script>
+</body>
+</html>
